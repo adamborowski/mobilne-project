@@ -1,3 +1,0 @@
-This is library folder containing two production-ready libraries to use with user application.
-The server library should be an maven project.
-The client library should be an ES6 javascript project where dist should contain combined or/and minified source code to include in user application.
