@@ -24,6 +24,4 @@ public class ResourceController {
         resourceService.addResource(resource);
         return resource;
     }
-
-
 }
