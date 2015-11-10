@@ -1,6 +1,6 @@
 export default class ListController {
     constructor($http) {
-
+        this.state="login";
         this.rest = "/resources/";
         this.howMany = 1;
         this.message = "Siema";
@@ -13,6 +13,11 @@ export default class ListController {
         this.password = password;
         this.$http.defaults.headers.common['Authorization'] = btoa(username + ":" + password)
         this.getList();
+        this.state="list";
+    }
+
+    goHome(){
+        this.state="login";
     }
 
     getList() {

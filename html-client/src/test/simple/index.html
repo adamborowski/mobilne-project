@@ -7,26 +7,29 @@
 <h2>Super manager</h2>
 {{message}}
 <ul class="container" ng-controller="ListController as list">
-    <label>Username</label>
-    <input type="text" ng-model="username"/>
-    <label>Password</label>
-    <input type="password" ng-model="password"/>
-    <button ng-click="list.login(username, password)">Login</button>
-
-
-    <li ng-repeat="item in list.items" ng-init="howMany=1">
-        <p>{{item.name}} ({{item.count}})</p>
-        <input type="number" ng-model="howMany"/>
-        <button ng-click="list.add(item, howMany)">Add</button>
-        <button ng-click="list.sub(item, howMany)">Sub</button>
-        <button ng-click="list.remove(item)">Remove</button>
-    </li>
-    <div id="add-item-form">
-        Create new item:
-        <label>name</label>
-        <input type="text" ng-model="list.newName"/>
-        <input type="number" ng-model="list.newCount"/>
-        <button ng-click="list.create(list.newName, list.newCount)">Create!</button>
+    <div ng-show="list.state=='login'">
+        <label>Username</label>
+        <input type="text" ng-model="username"/>
+        <label>Password</label>
+        <input type="password" ng-model="password"/>
+        <button ng-click="list.login(username, password)">Login</button>
+    </div>
+    <div ng-show="list.state=='list'">
+        <button ng-click="list.goHome()">Logout</button>
+        <li ng-repeat="item in list.items" ng-init="howMany=1">
+            <p>{{item.name}} ({{item.count}})</p>
+            <input type="number" ng-model="howMany"/>
+            <button ng-click="list.add(item, howMany)">Add</button>
+            <button ng-click="list.sub(item, howMany)">Sub</button>
+            <button ng-click="list.remove(item)">Remove</button>
+        </li>
+        <div id="add-item-form">
+            Create new item:
+            <label>name</label>
+            <input type="text" ng-model="list.newName"/>
+            <input type="number" ng-model="list.newCount"/>
+            <button ng-click="list.create(list.newName, list.newCount)">Create!</button>
+        </div>
     </div>
 </ul>
 
