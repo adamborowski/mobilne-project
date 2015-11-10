@@ -18,6 +18,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Resource> getResources() {
+
         return list;
     }
 
@@ -25,4 +26,26 @@ public class ResourceServiceImpl implements ResourceService {
     public void addResource(Resource resource) {
         list.add(resource);
     }
+
+    public Resource getResourceByName(String name) {
+        for (Resource item : list) {
+            if (item.getName().equals(name)) {
+                return item;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void deleteResource(String resourceName) {
+        list.remove(getResourceByName(resourceName));
+    }
+
+    @Override
+    public void updateResource(String resourceName, Resource resource) {
+        list.remove(getResourceByName(resourceName));
+        list.add(resource);
+    }
+
+
 }

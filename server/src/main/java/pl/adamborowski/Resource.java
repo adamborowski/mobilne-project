@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class Resource {
     private String name;
-    private int value;
+    private int count;
 
     public Resource() {
     }
 
-    public Resource(String name, int value) {
+    public Resource(String name, int count) {
         this.name = name;
-        this.value = value;
+        this.count = count;
     }
 
     public String getName() {
@@ -24,11 +24,11 @@ public class Resource {
         this.name = name;
     }
 
-    public int getValue() {
-        return value;
+    public int getCount() {
+        return count;
     }
 
-    public void setValue(int value) {
-        this.value = value;
+    public void setCount(int value) {
+        this.count = value;
     }
 }

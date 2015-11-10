@@ -1,10 +1,4 @@
-/*
- Gulpfile (Babel + Webpack) from Quickstart
- qkst.io/js/gulpfile-babel-webpack
- */
-
-// npm install --save-dev gulp webpack-stream babel-loader
-
+var path = require('path');
 var gulp = require('gulp');
 var webpack = require('webpack-stream');
 var webserver = require('gulp-webserver');
@@ -14,18 +8,19 @@ function pack(entry, root, fileName, libraryName) {
     return gulp.src(entry)
         .pipe(webpack({
             resolve: {
-                root: __dirname + "/" + root,
-                fallback: __dirname + 'node_modules'
+                root: path.resolve(__dirname, root),
+                fallback: path.resolve(__dirname, 'node_modules')
             },
             output: {
                 library: libraryName,
-                filename: fileName,
+                filename: fileName
                 //libraryTarget: 'amd' // our client wants to load our library via AMD
             },
             module: {
-                loaders: [{
-                    loader: 'babel-loader'
-                }]
+                loaders: [
+                    {loader: 'babel-loader'},
+                    {test: /\.html$/, loader: 'html'}
+                ]
             }
         }))
 }
