@@ -1,34 +1,91 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
     <title>Your Website</title>
 </head>
-<body ng-app="app">
-<h2>Super manager</h2>
-{{message}}
-<ul class="container" ng-controller="ListController as list">
+<body ng-app="app" ng-controller="ListController as list">
+
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <!--<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">-->
+            <!--<span class="sr-only">Toggle navigation</span>-->
+            <!--<span class="icon-bar"></span>-->
+            <!--<span class="icon-bar"></span>-->
+            <!--<span class="icon-bar"></span>-->
+            <!--</button>-->
+            <a class="navbar-brand" href="#">Super Manager</a>
+
+            <div ng-show="list.state!='login'">
+                <button type="button" class="glyphicon glyphicon-log-out navbar-btn btn btn-info pull-right"
+                        style="margin-right:6pt"
+                        ng-click="list.goHome()">
+                </button>
+                <span class="navbar-brand pull-right">logged as <strong>{{list.username}}</strong></span>
+            </div>
+
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+
+    </div>
+    <!-- /.container-fluid -->
+</nav>
+
+
+<ul class="container">
     <div ng-show="list.state=='login'">
-        <label>Username</label>
-        <input type="text" ng-model="username"/>
-        <label>Password</label>
-        <input type="password" ng-model="password"/>
-        <button ng-click="list.login(username, password)">Login</button>
+        <form ng-submit="list.login(username, password)">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" placeholder="Email" ng-model="username">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password" ng-model="password">
+            </div>
+            <button type="submit" class="btn btn-default">Login</button>
+        </form>
     </div>
     <div ng-show="list.state=='list'">
-        <button ng-click="list.goHome()">Logout</button>
-        <li ng-repeat="item in list.items" ng-init="howMany=1">
-            <p>{{item.name}} ({{item.count}})</p>
-            <input type="number" ng-model="howMany"/>
-            <button ng-click="list.add(item, howMany)">Add</button>
-            <button ng-click="list.sub(item, howMany)">Sub</button>
-            <button ng-click="list.remove(item)">Remove</button>
-        </li>
-        <div id="add-item-form">
-            Create new item:
-            <label>name</label>
-            <input type="text" ng-model="list.newName"/>
-            <input type="number" ng-model="list.newCount"/>
-            <button ng-click="list.create(list.newName, list.newCount)">Create!</button>
+        <div class="panel panel-default">
+            <div class="panel-heading">Your items</div>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="item in list.items" ng-init="howMany=1">
+                    <p>{{item.name}} ({{item.count}})</p>
+
+                    <form class="form" ng-submit="list.add(item,howMany)">
+
+                        <div class="form-group">
+                            <input class="form-control" type="number" ng-model="howMany"/>
+                            <button class="btn glyphicon glyphicon-plus btn-default" type="submit"></button>
+                            <button class="btn glyphicon glyphicon-minus" type="button" ng-click="list.sub(item, howMany)"></button>
+                            <button class="btn glyphicon glyphicon-remove" type="button" ng-click="list.remove(item)"></button>
+                        </div>
+                    </form>
+
+                </li>
+            </ul>
+        </div>
+
+
+        <div id="add-item-form" class="panel panel-default">
+            <div class="panel-heading">Add new item</div>
+            <form class="form-inline panel-body" ng-submit="list.create(list.newName, list.newCount)">
+                <div class="form-group">
+                    <label for="username">Name</label>
+                    <input type="text" class="form-control" id="name" placeholder="Name" ng-model="list.newName">
+                </div>
+                <div class="form-group">
+                    <label for="password">Count</label>
+                    <input type="number" class="form-control" id="newCount" placeholder="Count"
+                           ng-model="list.newCount">
+                </div>
+                <button type="submit" class="btn btn-default">Login</button>
+            </form>
         </div>
     </div>
 </ul>
@@ -36,6 +93,8 @@
 <footer>
     <p>Copyright 2015 by Student</p>
 </footer>
+<script src="../../../node_modules/jquery/dist/jquery.min.js"></script>
+<script src="../../../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
 <script src="../../../dist/ogrid-client.js"></script>
 </body>
 </html>
