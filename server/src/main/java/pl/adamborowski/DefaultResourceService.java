@@ -73,10 +73,10 @@ public class DefaultResourceService implements ResourceService {
         public ItemStore updateItemDeviceDelta(String name, String deviceId, Integer delta) {
             ItemStore itemStore = getItemStore(name);
             itemStore.updateDeviceDelta(deviceId, delta);
-            if (itemStore.getSum() <= 0) {
-                removeItemStore(name);
-                return null;
-            }
+//            if (itemStore.getSum() <= 0) {//synchronization error
+//                removeItemStore(name);
+//                return null;
+//            }
             return itemStore;
         }
     }
@@ -154,7 +154,7 @@ public class DefaultResourceService implements ResourceService {
         for (ItemStore item : store.getItems()) {
             Resource resource = new Resource();
             resource.setName(item.name);
-            resource.setDeviceDelta(item.getDeviceDelta(deviceId));
+            resource.setDelta(item.getDeviceDelta(deviceId));
             resource.setSum(item.getSum());
             result.add(resource);
         }

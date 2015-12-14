@@ -14,5 +14,5 @@ import org.springframework.stereotype.Component;
 public class Resource {
     private String name;
     private int sum;
-    private int deviceDelta;
+    private int delta;
 }

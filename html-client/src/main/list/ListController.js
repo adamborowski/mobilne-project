@@ -1,27 +1,29 @@
 export default class ListController {
     constructor($http) {
-        this.state="login";
+        this.state = "login";
         this.rest = "/resources/";
         this.howMany = 1;
         this.message = "Siema";
         this.items = [];
         this.$http = $http;
+        this.online = false;
     }
 
-    login(username, password){
+    login(username, password, deviceId) {
         this.username = username;
         this.password = password;
-        this.$http.defaults.headers.common['Authorization'] = "Basic "+ btoa(username + ":" + password)
+        this.deviceId = deviceId;
+        this.$http.defaults.headers.common['Authorization'] = "Basic " + btoa(username + ":" + password)
         this.getList();
-        this.state="list";
+        this.state = "list";
     }
 
-    goHome(){
-        this.state="login";
+    goHome() {
+        this.state = "login";
     }
 
     getList() {
-        this.$http.get(this.rest).then(result=> {
+        this.$http.get(this.rest + "?deviceId=" + this.deviceId).then(result=> {
                 this.items = result.data;
             }
         )
@@ -29,39 +31,56 @@ export default class ListController {
 
 
     add(item, howMany) {
-        this.$http.put(this.rest + item.name, {
-            name: item.name,
-            count: item.count + howMany
-        }).then(result=> {
-            item.count += howMany
-        });
+        this.updateLocalStore(item, item.delta + howMany);
     }
 
     sub(item, howMany) {
-        this.$http.put(this.rest + item.name, {
-            name: item.name,
-            count: item.count - howMany
-        }).then(result=> {
-            item.count -= howMany
-        });
+        this.updateLocalStore(item, item.delta - howMany);
     }
 
-    create(name, count) {
-        this.$http.post(this.rest, {
-            name: name,
-            count: count
-        }).then(result=> {
+    create(name, sum) {
+        var found = false;
+        for(var i=0;i<this.items.length;i++){
+            if(this.items[i].name == name) {
+                this.items[i].sum += sum;
+                this.items[i].delta += sum;
+                found = true;
+                break;
+            }
+        }
+        if(!found)
+        {
             this.items.push({
                 name: name,
-                count: count
+                sum: sum,
+                delta: sum
             });
-        });
-
+        }
     }
 
     remove(item) {
-        this.$http.delete(this.rest + item.name).then(request=> {
-            this.items.splice(this.items.indexOf(item), 1);
-        });
+        this.updateLocalStore(item, -item.sum + item.delta);
+    }
+
+    updateLocalStore(item, newDelta) {
+        var addChange = newDelta - item.delta;
+        item.sum += addChange;
+        item.delta = newDelta;
+        if (this.online) {
+            this.sync();
+        }
+    }
+
+    sync() {
+        console.table(this.items);
+        var data = {
+            deviceId: this.deviceId,
+            deltas:this.items
+        };
+        this.$http.put(this.rest, data).then(result=> {
+                this.items = result.data;
+            }
+        )
+
     }
 }
