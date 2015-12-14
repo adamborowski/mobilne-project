@@ -1,34 +1,18 @@
 package pl.adamborowski;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 @Component
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
 public class Resource {
     private String name;
-    private int count;
-
-    public Resource() {
-    }
-
-    public Resource(String name, int count) {
-        this.name = name;
-        this.count = count;
-    }
-
-    public String getName() {
-
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public int getCount() {
-        return count;
-    }
-
-    public void setCount(int value) {
-        this.count = value;
-    }
+    private int sum;
+    private int deviceDelta;
 }

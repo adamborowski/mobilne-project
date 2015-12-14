@@ -11,7 +11,7 @@ export default class ListController {
     login(username, password){
         this.username = username;
         this.password = password;
-        this.$http.defaults.headers.common['Authorization'] = btoa(username + ":" + password)
+        this.$http.defaults.headers.common['Authorization'] = "Basic "+ btoa(username + ":" + password)
         this.getList();
         this.state="list";
     }
