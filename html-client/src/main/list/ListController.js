@@ -42,6 +42,9 @@ export default class ListController {
         var found = false;
         for(var i=0;i<this.items.length;i++){
             if(this.items[i].name == name) {
+                if(this.items[i].sum <0){
+                    sum-=this.items[i].sum;
+                }
                 this.items[i].sum += sum;
                 this.items[i].delta += sum;
                 found = true;

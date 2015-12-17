@@ -62,7 +62,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Your items</div>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="item in list.items" ng-init="howMany=1" ng-if="item.sum!=0">
+                <li class="list-group-item" ng-repeat="item in list.items" ng-init="howMany=1" ng-if="item.sum>0">
                     <p>{{item.name}} ({{item.sum}})</p>
 
                     <form class="form" ng-submit="list.add(item,howMany)">
