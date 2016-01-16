@@ -102,6 +102,7 @@ public class DefaultResourceService implements ResourceService {
         }
         for (ItemStore item : store.getItems()) {
             Resource resource = new Resource();
+            resource.setId(item.getId());
             resource.setName(item.getName());
             resource.setDelta(item.getDeviceDelta(deviceId));
             resource.setSum(item.getSum());
