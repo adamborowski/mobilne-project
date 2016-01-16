@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 @Setter
 public class Resource {
     private String name;
+    private String id;
     private int sum;
     private int delta;
 }

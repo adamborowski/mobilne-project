@@ -1,85 +1,24 @@
 package pl.adamborowski;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import org.springframework.stereotype.Service;
+import pl.adamborowski.data.BatchSyncData;
+import pl.adamborowski.data.BatchSyncResult;
+import pl.adamborowski.exception.ItemException;
+import pl.adamborowski.store.ItemStore;
+import pl.adamborowski.store.UserStore;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+//todo wyzerowanie na zero a nie na deltach, usuwanie: idempotentne
+//oddać przy kolejnym etapie
+//następny etap: ceny dla produktów (najnowsza cena wygrywa), kategorie produktów i możliwość, które kategorie widzimy per device (na tablecie tylko rtv i spozywcze)
+
+
 @Service("resourceService")
 public class DefaultResourceService implements ResourceService {
-    @EqualsAndHashCode(of = "name")
-    private static class ItemStore {
-        @Getter
-        private String name;
-        @Getter
-        private int sum;
-        private Map<String, Integer> deltas;
-
-        public ItemStore(String name) {
-            this.name = name;
-            sum = 0;
-            deltas = new HashMap<>();
-        }
-
-
-        public void updateDeviceDelta(String deviceId, Integer delta) {
-            if (delta == 0) {
-                deltas.remove(deviceId);
-            } else {
-                deltas.put(deviceId, delta);
-            }
-            sum = deltas.values().stream().mapToInt(i -> i).sum();
-        }
-
-        public Integer getDeviceDelta(String deviceId) {
-            if (deltas.containsKey(deviceId)) {
-                return deltas.get(deviceId);
-            }
-            return 0; // this device doesn't know anything about this resource
-        }
-    }
-
-    private static class UserStore {
-        private Map<String, ItemStore> itemsByName = new HashMap<>();
-        private List<ItemStore> items = new ArrayList<>();
-
-        private ItemStore getItemStore(String name) {
-
-            if (itemsByName.containsKey(name)) {
-                return itemsByName.get(name);
-            }
-            ItemStore newStore = new ItemStore(name);
-            items.add(newStore);
-            itemsByName.put(name, newStore);
-            return newStore;
-        }
-
-        private void removeItemStore(String name) {
-            ItemStore itemStore = itemsByName.get(name);
-            if (itemStore != null) {
-                itemsByName.remove(name);
-                items.remove(itemStore);
-            }
-        }
-
-        public List<ItemStore> getItems() {
-            return items;
-        }
-
-        public ItemStore updateItemDeviceDelta(String name, String deviceId, Integer delta) {
-            ItemStore itemStore = getItemStore(name);
-            itemStore.updateDeviceDelta(deviceId, delta);
-//            if (itemStore.getSum() <= 0) {//synchronization error
-//                removeItemStore(name);
-//                return null;
-//            }
-            return itemStore;
-        }
-    }
 
     private Map<String, UserStore> perUserStore = new HashMap<>();
 
@@ -144,19 +83,29 @@ public class DefaultResourceService implements ResourceService {
     }
 
     @Override
-    public List<Resource> syncResources(BatchSyncData data, String user) {
+    public BatchSyncResult syncResources(BatchSyncData data, String user){
         final UserStore store = getStoreForUser(user);
         final String deviceId = data.getDeviceId();
+        BatchSyncResult result = new BatchSyncResult();
         for (BatchSyncData.DeviceItemDelta item : data.getDeltas()) {
-            store.updateItemDeviceDelta(item.getName(), deviceId, item.getDelta());
+            try {
+                if (item.isCreateRequested()) {
+                    store.requestCreateItem(item.getId(), item.getName(), deviceId, item.getDelta());
+                } else if (item.isDeleteRequested()) {
+                    store.requestDeleteItem(item.getId(), item.getName(), deviceId);
+                } else {
+                    store.updateItemDeviceDelta(item.getId(), deviceId, item.getDelta());
+                }
+            } catch (ItemException e) {
+                result.getErrors().add(new BatchSyncResult.SingleOperationException(item.getId(), e.getErrorCode(), e.getMessage()));
+            }
         }
-        final List<Resource> result = new ArrayList<>();
         for (ItemStore item : store.getItems()) {
             Resource resource = new Resource();
-            resource.setName(item.name);
+            resource.setName(item.getName());
             resource.setDelta(item.getDeviceDelta(deviceId));
             resource.setSum(item.getSum());
-            result.add(resource);
+            result.getResources().add(resource);
         }
         return result;
     }

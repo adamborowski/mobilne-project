@@ -1,5 +1,8 @@
 package pl.adamborowski;
 
+import pl.adamborowski.data.BatchSyncData;
+import pl.adamborowski.data.BatchSyncResult;
+
 import java.util.List;
 
 public interface ResourceService {
@@ -16,5 +19,5 @@ public interface ResourceService {
 
     void updateResource(String resourceName, Resource resource, String user);
 
-    List<Resource> syncResources(BatchSyncData data, String user);
+   BatchSyncResult syncResources(BatchSyncData data, String user);
 }
