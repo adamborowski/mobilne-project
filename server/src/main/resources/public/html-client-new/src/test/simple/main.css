@@ -1,0 +1,8 @@
+.create-requested {
+    color: green;
+}
+
+.delete-requested {
+    color: red;
+    opacity: 0.3;
+}
