@@ -1,7 +1,7 @@
 export default class ListController {
     constructor($http) {
         this.state = "login";
-        this.rest = "/resources/";
+        this.rest = "/resources/?v=2";
         this.howMany = 1;
         this.message = "Siema";
         this.items = [];
