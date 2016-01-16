@@ -3,6 +3,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <link rel="stylesheet" href="../../../node_modules/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="main.css">
     <title>Your Website</title>
 </head>
 <body ng-app="app" ng-controller="ListController as list">
@@ -59,10 +60,19 @@
         </form>
     </div>
     <div ng-show="list.state=='list'">
+        <div role="alert" class="alert alert-warning" ng-repeat="error in list.errors">
+            <h4>
+                Sync conflict of <strong>{{error.item.name}}</strong>
+            </h4>
+            <p>
+                {{error.errorMessage}}
+            </p>
+        </div>
         <div class="panel panel-default">
             <div class="panel-heading">Your items</div>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="item in list.items" ng-init="howMany=1" ng-if="item.sum>0">
+                <li class="list-group-item {{item.deleteRequested?'delete-requested':''}} {{item.createRequested?'create-requested':''}}"
+                    ng-repeat="item in list.items" ng-init="howMany=1">
                     <p>{{item.name}} ({{item.sum}})</p>
 
                     <form class="form" ng-submit="list.add(item,howMany)">
