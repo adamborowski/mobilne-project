@@ -6,3 +6,7 @@
     color: red;
     opacity: 0.3;
 }
+
+.update-requested:not(.delete-requested):not(.create-requested) {
+    color: darkblue;
+}

@@ -71,7 +71,7 @@
         <div class="panel panel-default">
             <div class="panel-heading">Your items</div>
             <ul class="list-group">
-                <li class="list-group-item {{item.deleteRequested?'delete-requested':''}} {{item.createRequested?'create-requested':''}}"
+                <li class="list-group-item {{item.deleteRequested?'delete-requested':''}} {{item.createRequested?'create-requested':''}} {{item.updateRequested?'update-requested':''}}"
                     ng-repeat="item in list.items" ng-init="howMany=1">
                     <p>{{item.name}} ({{item.sum}})</p>
 

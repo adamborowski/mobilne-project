@@ -21,6 +21,7 @@ export default class ListController {
         this.$http.defaults.headers.common['Authorization'] = "Basic " + btoa(username + ":" + password)
         this.getList();
         this.state = "list";
+        document.title = this.deviceId +"/#"+this.username;
     }
 
     goHome() {
@@ -28,9 +29,14 @@ export default class ListController {
     }
 
     getList() {
-        this.$http.get(this.rest + "?deviceId=" + this.deviceId).then(result=> {
-            this.initItems(result.data.resources);
-        });
+        if (this.online) {
+            this.$http.get(this.rest + "?deviceId=" + this.deviceId).then(result=> {
+                this.initItems(result.data.resources);
+            });
+        }
+        else {
+            this.restoreLocal();
+        }
     }
 
     initItems(items) {
@@ -91,12 +97,31 @@ export default class ListController {
         if (this.online) {
             this.sync();
         }
+        this.dumpItemsToLocalStorage();
+    }
+
+    dumpItemsToLocalStorage() {
+        localStorage[this.getLocalKey("items")] = JSON.stringify(this.items);
+    }
+
+    getLocalKey(propName) {
+        return this.username + "/" + this.deviceId + "/" + propName;
+    }
+
+    restoreLocal() {
+        if (localStorage[this.getLocalKey("items")]) {
+            this.initItems(JSON.parse(localStorage[this.getLocalKey("items")]));
+        }
+        else {
+            this.initItems([]);
+        }
     }
 
     updateLocalStore(item, newDelta) {
         var addChange = newDelta - item.delta;
         item.sum += addChange;
         item.delta = newDelta;
+        item.updateRequested = true;
         this.syncIfOnline();
     }
 
@@ -119,12 +144,15 @@ export default class ListController {
         this.errors = [];
         this.$http.put(this.rest, data).then(result=> {
             this.initItems(result.data.resources);
+            this.dumpItemsToLocalStorage();
             for (var i = 0; i < result.data.errors.length; i++) {
                 var error = result.data.errors[i];
                 error.item = this.itemByGuid[error.guid];
                 this.errors.push(error);
             }
+
         });
+
 
     }
 }
