@@ -15,13 +15,16 @@ public class ItemStore {
     @Getter
     private int price;
     @Getter
+    private String category;
+    @Getter
     private int sum;
     private Map<String, Integer> deltas;
 
-    public ItemStore(String id, String name, int price) {
+    public ItemStore(String id, String name, int price, String category) {
         this.id = id;
         this.name = name;
         this.price = price;
+        this.category = category;
         sum = 0;
         deltas = new HashMap<>();
     }
@@ -45,5 +48,9 @@ public class ItemStore {
 
     public void updatePrice(int price) {
         this.price = price;
+    }
+
+    public void updateCategory(String category) {
+        this.category = category;
     }
 }

@@ -34,13 +34,13 @@ public class UserStoreServiceTest {
     public void testA1B1C1() throws ItemException {
         thrown.expect(ItemException.class);
         thrown.expectMessage("Cannot create item, the same GUID exists");
-        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0);
-        userStore.requestCreateItem("guid1", "apple", dev2, 3, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0, "");
+        userStore.requestCreateItem("guid1", "apple", dev2, 3, 0, "");
     }
 
     @Test // guid exists, name exists, delete requested
     public void testA1B1C2() throws ItemException {
-        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0, "");
         assertThat(userStore.getItems(), CoreMatchers.is(CoreMatchers.not(Matchers.empty())));
         userStore.requestDeleteItem("guid1", "apple", dev2);
         assertThat(userStore.getItems(), CoreMatchers.is(Matchers.empty()));
@@ -51,7 +51,7 @@ public class UserStoreServiceTest {
 
     @Test // guid exists, name exists, update requested
     public void testA1B1C3() throws ItemException {
-        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0, "");
         assertThat(userStore.getItems(), CoreMatchers.is(CoreMatchers.not(Matchers.empty())));
         userStore.updateItemDeviceDelta("guid1", dev1, 1);
         assertThat(userStore.getItems().get(0).getDeviceDelta(dev1), equalTo(1));
@@ -63,8 +63,8 @@ public class UserStoreServiceTest {
     public void testA2B1C1() throws ItemException {
         thrown.expect(ItemException.class);
         thrown.expectMessage("Cannot create item, the item of that name was created on another device");
-        userStore.requestCreateItem("guid1", "apple", dev1, 1, 0);
-        userStore.requestCreateItem("guid2", "apple", dev1, 1, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 1, 0, "");
+        userStore.requestCreateItem("guid2", "apple", dev1, 1, 0, "");
     }
 
     @Test // guid not exists, name exists, delete requested
@@ -72,7 +72,7 @@ public class UserStoreServiceTest {
         thrown.expect(ItemException.class);
         thrown.expectMessage("Cannot delete item, the item was deleted and recreated on another device");
         // given
-        userStore.requestCreateItem("guid1", "apple", dev1, 1, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 1, 0, "");
         // when
         userStore.requestDeleteItem("guid2", "apple", dev1);
 
@@ -82,7 +82,7 @@ public class UserStoreServiceTest {
 
     @Test // guid not extists, name not exists, create requested
     public void testA2B2C1() throws ItemException {
-        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0);
+        userStore.requestCreateItem("guid1", "apple", dev1, 3, 0, "");
         assertThat(userStore.getItems().get(0).getSum(), equalTo(3));
     }
 

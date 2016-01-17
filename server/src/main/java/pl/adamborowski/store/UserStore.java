@@ -26,8 +26,8 @@ public class UserStore {
         return null;
     }
 
-    private ItemStore createItemStore(String id, String name, int price) {
-        ItemStore newStore = new ItemStore(id, name, price);
+    private ItemStore createItemStore(String id, String name, int price, String category) {
+        ItemStore newStore = new ItemStore(id, name, price, category);
         items.add(newStore);
         itemsById.put(id, newStore);
         itemsByName.put(name, newStore);
@@ -70,7 +70,7 @@ public class UserStore {
         }
     }
 
-    public void requestCreateItem(String id, String name, String deviceId, int delta, int price) throws ItemException {
+    public void requestCreateItem(String id, String name, String deviceId, int delta, int price, String category) throws ItemException {
         ItemStore itemStore = getItemStore(id);
         if (itemStore != null) {
             // very rare situation, guid should be generated strong randomly
@@ -81,7 +81,7 @@ public class UserStore {
                 throw new ItemException(ItemException.Cause.NAME_ALREADY_EXISTS, "Cannot create item, the item of that name was created on another device");
             }
             // no other item of that name
-            createItemStore(id, name, price).updateDeviceDelta(deviceId, delta);
+            createItemStore(id, name, price, category).updateDeviceDelta(deviceId, delta);
         }
     }
 
@@ -91,6 +91,15 @@ public class UserStore {
             throw new ItemException(ItemException.Cause.GUID_NOT_FOUND, "Cannot update item, the item was deleted on another device");
         }
         itemStore.updatePrice(price);
+        return itemStore;
+    }
+
+    public ItemStore updateItemCategory(String id, String category) throws ItemException {
+        ItemStore itemStore = getItemStore(id);
+        if (itemStore == null) {
+            throw new ItemException(ItemException.Cause.GUID_NOT_FOUND, "Cannot update item, the item was deleted on another device");
+        }
+        itemStore.updateCategory(category);
         return itemStore;
     }
 }

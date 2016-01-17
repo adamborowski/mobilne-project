@@ -49,6 +49,7 @@ export default class ListController {
         this.items = items;
         for (var i = 0; i < items.length; i++) {
             this.itemByGuid[items[i].id] = items[i]
+            //check if category is not blacklisted
         }
     }
 
@@ -62,7 +63,7 @@ export default class ListController {
         this.updateLocalStore(item, item.delta - howMany);
     }
 
-    create(name, sum, price) {
+    create(name, sum, price, category) {
         var found = false;
         for(var i=0;i<this.items.length;i++){
             if (this.items[i].name == name && this.items[i].deleteRequested != true) {
@@ -73,8 +74,12 @@ export default class ListController {
                 this.items[i].sum += sum;
                 this.items[i].delta += sum;
                 if (price != null) {
-                    this.items[i].price = sum;
+                    this.items[i].price = price;
                     this.items[i].priceChangeRequested = true;
+                }
+                if (category != null) {
+                    this.items[i].category = category;
+                    this.items[i].categoryChangeRequested = true;
                 }
                 delete this.items[i].deleteRequested;
                 found = true;
@@ -90,7 +95,8 @@ export default class ListController {
                 delta: sum,
                 phantom: true,
                 createRequested: true,
-                price: price
+                price: price,
+                category: category
             };
             this.items.push(item);
             this.itemByGuid[item.id] = item;
@@ -110,6 +116,12 @@ export default class ListController {
         this.syncIfOnline();
     }
 
+    changeCategory(item, category) {
+        item.categoryChangeRequested = true;
+        item.category = category;
+        this.syncIfOnline();
+    }
+
     syncIfOnline() {
         if (this.online) {
             this.sync();
@@ -121,11 +133,16 @@ export default class ListController {
         localStorage[this.getLocalKey("items")] = JSON.stringify(this.items);
     }
 
+    dumpBlackListCategoriesToLocalStorage() {
+        localStorage[this.getLocalKey("blackList")] = JSON.stringify(this.blackList);
+    }
+
     getLocalKey(propName) {
         return this.username + "/" + this.deviceId + "/" + propName;
     }
 
     restoreLocal() {
+        this.blackList = JSON.parse(localStorage[this.getLocalKey("blackList")] || "[]");
         if (localStorage[this.getLocalKey("items")]) {
             this.initItems(JSON.parse(localStorage[this.getLocalKey("items")]));
         }
@@ -172,4 +189,38 @@ export default class ListController {
 
 
     }
+
+
+    addToBlackList(categoryName) {
+        var item = {name: categoryName};
+        this.blackList.push(item);
+        this.dumpBlackListCategoriesToLocalStorage();
+    }
+
+    removeFromBlackList(category) {
+        for (var i = 0; i < this.blackList.length; i++) {
+            if (this.blackList[i] == category) {
+                this.blackList.splice(i, 1);
+                this.dumpBlackListCategoriesToLocalStorage();
+                return;
+            }
+        }
+    }
+
+    canBeDisplayed(item) {
+        if (this.blackList.length == 0) {
+            return true;
+        }
+        for (var i = 0; i < this.blackList.length; i++) {
+            if (this.blackList[i].name == item.category) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+
+
 }

@@ -94,7 +94,7 @@ public class DefaultResourceService implements ResourceService {
         for (BatchSyncData.DeviceItemDelta item : data.getDeltas()) {
             try {
                 if (item.isCreateRequested()) {
-                    store.requestCreateItem(item.getId(), item.getName(), deviceId, item.getDelta(), item.getPrice());
+                    store.requestCreateItem(item.getId(), item.getName(), deviceId, item.getDelta(), item.getPrice(), item.getCategory());
                 } else if (item.isDeleteRequested()) {
                     store.requestDeleteItem(item.getId(), item.getName(), deviceId);
                 } else {
@@ -103,6 +103,9 @@ public class DefaultResourceService implements ResourceService {
                 if(versionProvider.isVersion(2)){
                     if(item.isPriceChangeRequested()){
                         store.updateItemPrice(item.getId(), item.getPrice());
+                    }
+                    if(item.isCategoryChangeRequested()){
+                        store.updateItemCategory(item.getId(), item.getCategory());
                     }
                 }
             } catch (ItemException e) {
@@ -116,6 +119,7 @@ public class DefaultResourceService implements ResourceService {
             resource.setDelta(item.getDeviceDelta(deviceId));
             resource.setSum(item.getSum());
             resource.setPrice(item.getPrice());
+            resource.setCategory(item.getCategory());
             result.getResources().add(resource);
         }
         return result;

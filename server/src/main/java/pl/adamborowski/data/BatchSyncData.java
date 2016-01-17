@@ -27,6 +27,7 @@ public class BatchSyncData {
         private String id;
         private int delta;
         private int price = 0;
+        private String category = "default";
         boolean deleteRequested = false;
         /**
          * Od tej pory id produktów będą losowane - nie da się "utworzyć" drugi raz tych samych produktów. Jeśli dwa urządzenia utworzą pomidory, serwer może zwrócić błąd, UI: ktoś inny utworzył pomidory. Co chcesz zrobić?
@@ -51,5 +52,6 @@ public class BatchSyncData {
          */
         boolean createRequested = false;
         boolean priceChangeRequested = false;
+        boolean categoryChangeRequested = false;
     }
 }

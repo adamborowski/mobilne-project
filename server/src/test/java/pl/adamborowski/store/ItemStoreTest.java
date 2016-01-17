@@ -15,7 +15,7 @@ public class ItemStoreTest {
 
     @Before
     public void setUp() throws Exception {
-        itemStore = new ItemStore("guid1", "apple", 0);
+        itemStore = new ItemStore("guid1", "apple", 0, "");
     }
 
     @Test

@@ -27,7 +27,11 @@
                         ng-click="list.goHome()">
                 </button>
                 <button ng-click="list.sync()" class="navbar-btn btn btn-info pull-right glyphicon glyphicon-refresh" style="margin-right:6px" ng-show="list.state=='list'"></button>
-
+                <button style="margin-right:6pt"
+                        class="navbar-btn btn btn-info pull-right glyphicon glyphicon-stats" type="button"
+                        data-toggle="collapse" data-target="#collapseExample" aria-expanded="false"
+                        aria-controls="collapseExample">
+                </button>
                 <span class="navbar-brand pull-right"><i class="glyphicon glyphicon-user"></i> <strong>{{list.username}}</strong></span>
 
             </div>
@@ -60,6 +64,26 @@
         </form>
     </div>
     <div ng-show="list.state=='list'">
+        <div class="collapse" id="collapseExample">
+            <div class="panel panel-default" ng-init="newCategory=''">
+                <div class="panel-heading">Categories filter</div>
+                <ul class="list-group panel-body">
+
+                    <li class="list-group-item" ng-repeat="entry in list.blackList track by $index">
+
+                        <a class="pull-right glyphicon glyphicon-remove" ng-click="list.removeFromBlackList(entry)">
+
+                        </a>
+
+                        {{entry.name}}
+                    </li>
+                </ul>
+                <form class="form panel-footer" ng-submit="list.addToBlackList(newCategory)">
+                    <input class="form-control" ng-model="newCategory" id="newBlackListCategory"/>
+                    <button class="btn" type="submit">Ok</button>
+                </form>
+            </div>
+        </div>
         <div role="alert" class="alert alert-warning" ng-repeat="error in list.errors">
             <h4>
                 Sync conflict of <strong>{{error.item.name}}</strong>
@@ -72,7 +96,8 @@
             <div class="panel-heading">Your items</div>
             <ul class="list-group">
                 <li class="list-group-item {{item.deleteRequested?'delete-requested':''}} {{item.createRequested?'create-requested':''}} {{item.updateRequested?'update-requested':''}}"
-                    ng-repeat="item in list.items" ng-init="howMany=1; currentPrice=item.price">
+                    ng-repeat="item in list.items" ng-if="list.canBeDisplayed(item)"
+                    ng-init="howMany=1; currentPrice=item.price; currentCategory=item.category">
                     <p>{{item.name}} ({{item.sum}})</p>
 
                     <form class="form" ng-submit="list.add(item,howMany)">
@@ -83,9 +108,21 @@
                             <button class="btn glyphicon glyphicon-minus" type="button" ng-click="list.sub(item, howMany)"></button>
                             <button class="btn glyphicon glyphicon-remove" type="button" ng-click="list.remove(item)"></button>
                             <input style="width: 80px;display: inline-block;" class="form-control" type="number" ng-model="currentPrice"
-                            ng-change="list.changePrice(item, currentPrice)"
+                                   ng-change="list.changePrice(item, currentPrice)"
                             />
+
                         </div>
+                    </form>
+                    <form ng-submit="list.changeCategory(item, currentCategory)">
+                        <input style="width: 80px;display: inline-block;" class="form-control" type="text"
+                               ng-model="currentCategory"
+                        />
+
+                        <a class="glyphicon glyphicon-star"
+                           ng-click="list.addToBlackList(item.category)" title="hide whole category"
+                        >
+
+                        </a>
                     </form>
 
                 </li>
@@ -95,7 +132,8 @@
 
         <div id="add-item-form" class="panel panel-default">
             <div class="panel-heading">Add new item</div>
-            <form class="form-inline panel-body" ng-submit="list.create(list.newName, list.newSum, list.newPrice)">
+            <form class="form-inline panel-body"
+                  ng-submit="list.create(list.newName, list.newSum, list.newPrice, list.newCategory)">
                 <div class="form-group">
                     <label for="username">Name</label>
                     <input type="text" class="form-control" id="name" placeholder="Name" ng-model="list.newName">
@@ -109,6 +147,11 @@
                     <label for="password">Price</label>
                     <input type="number" class="form-control" id="newPrice" placeholder="Price"
                            ng-model="list.newPrice">
+                </div>
+                <div class="form-group">
+                    <label for="password">Category</label>
+                    <input type="text" class="form-control" id="newCategory" placeholder="Category"
+                           ng-model="list.newCategory">
                 </div>
                 <button type="submit" class="btn btn-default">Add</button>
             </form>
