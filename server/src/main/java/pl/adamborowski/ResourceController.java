@@ -30,6 +30,7 @@ public class ResourceController {
 
     @RequestMapping(method = RequestMethod.GET)
     public BatchSyncResult getResources(@RequestParam String deviceId) {
+
         return resourceService.syncResources(new BatchSyncData(deviceId, new ArrayList<BatchSyncData.DeviceItemDelta>()), getUser()); // sync result for the browser
     }
 }

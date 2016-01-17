@@ -8,6 +8,12 @@ export default class ListController {
         this.$http = $http;
         this.online = false;
         this.itemByGuid = {};
+
+
+        var param = $.getQueryParameters();
+        if (param.username) {
+            this.login(param.username, param.password, param.deviceId || 'device1');
+        }
     }
 
     guid() {
@@ -56,7 +62,7 @@ export default class ListController {
         this.updateLocalStore(item, item.delta - howMany);
     }
 
-    create(name, sum) {
+    create(name, sum, price) {
         var found = false;
         for(var i=0;i<this.items.length;i++){
             if (this.items[i].name == name && this.items[i].deleteRequested != true) {
@@ -66,6 +72,10 @@ export default class ListController {
                 }
                 this.items[i].sum += sum;
                 this.items[i].delta += sum;
+                if (price != null) {
+                    this.items[i].price = sum;
+                    this.items[i].priceChangeRequested = true;
+                }
                 delete this.items[i].deleteRequested;
                 found = true;
                 break;
@@ -79,7 +89,8 @@ export default class ListController {
                 sum: sum,
                 delta: sum,
                 phantom: true,
-                createRequested: true
+                createRequested: true,
+                price: price
             };
             this.items.push(item);
             this.itemByGuid[item.id] = item;
@@ -90,6 +101,12 @@ export default class ListController {
 
     remove(item) {
         item.deleteRequested = true;
+        this.syncIfOnline();
+    }
+
+    changePrice(item, price) {
+        item.priceChangeRequested = true;
+        item.price = price;
         this.syncIfOnline();
     }
 

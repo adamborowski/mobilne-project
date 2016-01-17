@@ -8,6 +8,12 @@ export default class ListController {
         this.$http = $http;
         this.online = false;
         this.itemByGuid = {};
+
+
+        var param = $.getQueryParameters();
+        if (param.username) {
+            this.login(param.username, param.password, param.deviceId || 'device1');
+        }
     }
 
     guid() {

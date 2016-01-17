@@ -16,4 +16,5 @@ public class Resource {
     private String id;
     private int sum;
     private int delta;
+    private int price;
 }

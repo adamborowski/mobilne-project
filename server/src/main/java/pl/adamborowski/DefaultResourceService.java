@@ -1,5 +1,6 @@
 package pl.adamborowski;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import pl.adamborowski.data.BatchSyncData;
 import pl.adamborowski.data.BatchSyncResult;
@@ -19,6 +20,9 @@ import java.util.Map;
 
 @Service("resourceService")
 public class DefaultResourceService implements ResourceService {
+
+    @Autowired
+    private RequestVersionProvider versionProvider;
 
     private Map<String, UserStore> perUserStore = new HashMap<>();
 
@@ -90,11 +94,16 @@ public class DefaultResourceService implements ResourceService {
         for (BatchSyncData.DeviceItemDelta item : data.getDeltas()) {
             try {
                 if (item.isCreateRequested()) {
-                    store.requestCreateItem(item.getId(), item.getName(), deviceId, item.getDelta());
+                    store.requestCreateItem(item.getId(), item.getName(), deviceId, item.getDelta(), item.getPrice());
                 } else if (item.isDeleteRequested()) {
                     store.requestDeleteItem(item.getId(), item.getName(), deviceId);
                 } else {
                     store.updateItemDeviceDelta(item.getId(), deviceId, item.getDelta());
+                }
+                if(versionProvider.isVersion(2)){
+                    if(item.isPriceChangeRequested()){
+                        store.updateItemPrice(item.getId(), item.getPrice());
+                    }
                 }
             } catch (ItemException e) {
                 result.getErrors().add(new BatchSyncResult.SingleOperationException(item.getId(), e.getErrorCode(), e.getMessage()));
@@ -106,6 +115,7 @@ public class DefaultResourceService implements ResourceService {
             resource.setName(item.getName());
             resource.setDelta(item.getDeviceDelta(deviceId));
             resource.setSum(item.getSum());
+            resource.setPrice(item.getPrice());
             result.getResources().add(resource);
         }
         return result;

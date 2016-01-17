@@ -13,12 +13,15 @@ public class ItemStore {
     @Getter
     private String name;
     @Getter
+    private int price;
+    @Getter
     private int sum;
     private Map<String, Integer> deltas;
 
-    public ItemStore(String id, String name) {
+    public ItemStore(String id, String name, int price) {
         this.id = id;
         this.name = name;
+        this.price = price;
         sum = 0;
         deltas = new HashMap<>();
     }
@@ -38,5 +41,9 @@ public class ItemStore {
             return deltas.get(deviceId);
         }
         return 0; // this device doesn't know anything about this resource
+    }
+
+    public void updatePrice(int price) {
+        this.price = price;
     }
 }
